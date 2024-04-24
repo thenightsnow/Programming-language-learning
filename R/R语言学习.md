@@ -1,6 +1,7 @@
 # R语言学习
 
-## 文件导入和输出
+## 基本语法
+### 文件导入和输出
 1. 将结果导入到文件：
    1. txt文件：
       1. cat函数：
@@ -12,7 +13,7 @@
    1. txt文件：
       1. readLines函数：`readLines("D:\\r_test.txt")`，行与行之间需要有换行符，包括最后一行
 
-## 数据类型
+### 数据类型
 1. 数字
    1. 数字常量：一般型和科学计数法
       1. 按对象分类：
@@ -68,7 +69,7 @@
          3. 截取字符串：`substring()`
          4. 字符串替换：`gsub()`
 
-## 判断语句
+### 判断语句
 1. if
    1. 单个if：`if(boolean_expression) { 布尔表达式为真将执行的语句}`
    2. if...else...:`if(boolean_expression) {如果布尔表达式为真将执行的语句} else {如果布尔表达式为假将执行的语句}`
@@ -77,7 +78,7 @@
    1. 当表达式是整数：返回case位置值。`x <- switch(3,"google","runoob","taobao")`
    2. 当表达式是字符串：返回case中变量名对应的值。`switch("runoob", google="www.google.com", runoob = "www.runoob.com", taobao = "www.taobao.com")`
 
-## 循环
+### 循环
 1. 循环类型：
    1. repeat:`repeat { 相关代码 if(condition) {break}}`
    2. while:`while(condition){statement(s);}`
@@ -86,9 +87,107 @@
    1. break
    2. next：跳过当前循环，进入下一循环。类似于其他函数的continue
 
-## 函数
+### 函数
 1. 定义函数：
    1. 基本形式：`function_name <- function(arg_1, arg_2, ...) {# 函数体 return(output)}`
    2. 组成部分：函数名、参数、函数体、返回值
 2. 懒惰计算：R函数对参数的计算是懒惰的，只有我们在计算它的时候才会调用
    1. 示例：`f <- function(x) {10}  f()`，该函数并未调用x，所以不会报错
+
+## 包
+### 包的管理
+1. 包的安装：
+   1. 基本形式：`install.packages("package_name")`
+   2. 升级包：`update.packages("package_name")`
+   3. 卸载包：`remove.packages("package_name")`
+2. 包的加载：
+   1. 基本形式：`library(package_name)`
+   2. 加载多个包：`library(package_name1, package_name2)`
+3. 包的使用：
+   1. 查看包帮助：`help(package_name)`
+   2. 查看包函数：`ls(package_name)`
+   3. 使用包函数：`package_name::function_name()`
+   4. 导入包函数：`library(package_name)`，然后使用`::`运算符调用函数
+4. 包的开发：
+   1. 包的结构：
+      1. 包名：包名必须是唯一的，不能与其他包重名
+      2. 文档：包的说明文档，一般放在包的根目录下，文件名为`DESCRIPTION`
+      3. 源文件：包的源代码文件，一般放在包的根目录下，文件名以`.R`结尾
+      4. 数据文件：包的数据文件，一般放在包的根目录下，文件名以`.RData`结尾
+      5. 其他文件：包的其他文件，一般放在包的根目录下，如`README.md`、`LICENSE`等
+   2. 包的构建：
+      1. 准备工作：
+         1. 安装`devtools`包：`install.packages("devtools")`
+         2. 创建包目录：`create_package("package_name")`
+      2. 编写源文件：
+         1. 编写源文件：`src/package_name.R`
+         2. 编写文档：`man/package_name.Rd`
+         3. 编写测试文件：`tests/testthat/test_package_name.R`
+      3. 构建包：`build("package_name")`
+
+### dplyr包
+1. 导入包：`library(dplyr)`
+2. 常用函数：
+   1. `select()`:选择列，传入列名向量或者有关列的表达式，
+   2. `filter()`:过滤行,传入判断条件的逻辑表达式（也有%in%运算符等）
+   3. `arrange()`:排序，传入列为正序，用desc()函数可以倒序
+   4. `mutate()、transmute()`:新增列（算数、模运算、逻辑运算等），transmute()函数可以只保留新列
+   5. `summarize()`:汇总
+   6. `group_by()`:分组
+   7. `left_join()`:左连接
+   8. `inner_join()`:内连接
+   9. `full_join()`:全连接
+   10. `anti_join()`:反连接
+3. 示例：
+   ```R line-numbers
+   library(dplyr)
+   # Example data
+   data <- data.frame(
+      id = c(1, 1, 2, 2, 3, 3),
+      date = as.Date(c("2021-01-01", "2021-01-02", "2021-01-01", "2021-01-02", "2021-01-01", "2021-01-02")),
+      category = c("A", "B", "A", "B", "A", "B"),
+      value = c(10, 20, 10, 20, 10, 20)
+   )
+   # Filtering rows where the category is 'A'
+   filtered_data <- data %>%
+      filter(category == "A")
+
+   # Selecting specific columns
+   selected_data <- data %>%
+      select(id, value)
+
+   # Arranging rows by value in descending order
+   arranged_data <- data %>%
+      arrange(desc(value))
+
+   # Adding a new column that is a transformation of existing columns
+   mutated_data <- data %>%
+      mutate(new_value = value * 10)
+
+   # Summarizing data to find mean value per category
+   summarized_data <- data %>%
+      group_by(category) %>%
+      summarise(mean_value = mean(value))
+   ```
+
+### readr包
+1. 导入包：`library(readr)`
+2. 常用函数：
+   1. `read_table()`:读取txt文件，默认使用`\t`分隔符，可以指定分隔符
+   2. `read_csv()`:读取csv文件，默认使用`,`分隔符，可以指定分隔符
+3. 示例：
+   ```R line-numbers
+   library(readr)
+   # Reading a txt file
+   txt_data <- read_table("data.txt")
+
+   # Reading a csv file
+   csv_data <- read_csv("data.csv")
+   csv_data2 <- read_csv("a,b,c
+      1,2,3)
+   csv_data3 <- read_csv("The first line of metadata
+   The second line of metadata
+   x,y,z
+   1,2,3
+   4,5,6",skip = 2)
+   ```
