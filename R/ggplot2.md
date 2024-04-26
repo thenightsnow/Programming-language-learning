@@ -159,6 +159,55 @@
       2. 非笛卡尔坐标系：
          1. 极坐标系：coord_polar()，可以用折线的形式连接，也可以用柱状图或其他方式连接（需要在图层中加载函数）
          2. 其他坐标系：coord_map()，可以用地图的形式展示数据，需要加载maptools包
+
+### 其它细节操作
+1. 主题：ggplot2的主题系统，可以控制整体的外观和感觉
+   1. 内置主题：theme_bw()白色背景和深灰色网线，theme_gray()灰色背景和浅灰色网线。base_size参数可以调整字体大小
+   2. 主题设置：
+      1. 全局设置：theme_set()返回先前的主题，用于备用，里面的参数可以设置当前的全局主题;theme_update()更新当前主题，用于临时设置;theme_get()获取当前主题
+      2. 局部设置：theme()，可以设置多个主题，用+连接，会覆盖全局默认的全局设置。如：theme_bw() + theme(text = element_text(size = 16))
+   3. 主题元素和相关函数：
+      1. 文本：element_text()，调整主题的文本元素，包括字体、大小、颜色、对齐方式、斜体、下划线、粗体、字体系列等
+      2. 线条：element_line()，调整主题背景的线条，包括颜色、粗细、类型、透明度等
+      3. 矩阵：element_rect()，调整主题的矩阵元素，包括填充颜色、透明度、边框、线型等
+      4. 空白：element_blank()，用于隐藏某些元素
+2. 自定义标度和几何对象
+   1. updata_geom_defaults()：更新默认的几何对象设置
+   2. updata_scale_defaults()：更新默认的标度设置
+   3. 几何对象的默认属性：[默认属性](补充资料/ggplot/默认属性.jpg)
+3. 储存输出
+   1. ggsave()：保存图片，使用png和pdf输出效果最好
+4. 一页多图（grid包）
+   1. 子图：viewport()函数，可以将一张图分成多个子图，每个子图可以单独调整大小、位置、标题、坐标轴等。例如：viewport(width = 0.5, height = 0.5, x = 0.5, y = 0.5)
+   2. 矩阵网络：
+      1. 多图：grid.newpage()函数，可以创建新的一页，并在其中绘制多个图
+      2. grid.layout()函数，可以设置子图的布局，例如：grid.layout(nrow = 2, ncol = 2)
+      3. 示例：
+      ```R line-numbers
+      library(grid)
+      grid.newpage()
+      pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = 2)))
+      vplayout <- function(x, y, width, height) {
+        viewport(layout.pos.row = x, layout.pos.col = y)
+      }
+      print(a,vp=vplayout(1, 1:2))
+      print(b,vp=vplayout(2, 1))
+      print(c,vp=vplayout(2, 2))
+      dev.off()   
+      ```
+
+### 数据操作（需要进一步实际操作）
+1. dplyr包：数据操纵包，可以对数据集进行过滤、排序、重组、聚合等操作
+   1. ddply()：对数据集进行分组操作，可以指定分组变量和操作函数，基本用法是ddply(.data, .groupvar, .fun)
+2. reshape2包：数据重塑包，可以将数据集转换成不同的形式
+   1. melt()：将数据集转换成长格式，可以指定id变量和measure变量，可以指定其他变量作为分组变量。基本语法形式是melt(data, id.var, measure.var)
+   2. dcast()：将数据集转换成宽格式，可以指定id变量和measure变量，可以指定其他变量作为分组变量
+
+### 减少重复操作
+1. last_plot()：获取上一次绘制的图形对象，可以重复使用
+2. 制作绘图模板：ggplot2的每一个组件都是对象，可以被创建储存并应用于某个图形中
+3. 定义绘图函数：可以将绘图过程中的一些参数固定下来，然后定义一个函数，可以重复使用
+
 ## qplot函数(快速画图)
 1. 基础语法：qplot(x, y, data = data, geom = 'point', ...)
    1. 基本参数：坐标轴和数据集
