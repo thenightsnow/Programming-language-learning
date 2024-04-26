@@ -38,7 +38,7 @@
             4. position_stack(reverse = TRUE):将同一类别的数据堆叠在一起，反转顺序
    2. 标度（scales）：控制数据到图形的映射
       1. 标度转换：先于统计变换，如取对数、平方等
-      2. 标度训练：根据所有数据集里数据的范围得到整体数据的范围
+      2. 标度训练：根据所有数据集里数据的范围得到整体数据的范围，用于控制多个图层中数据到图形的映射范围
       3. 标度映射：数据属性映射到图形空间，如color、size、shape等
          1. colour:
             1. 在aes中添加颜色:aes(displ,hwy,color=class)，可以根据给定的数据集中的参数的类别进行自动分配颜色
@@ -66,7 +66,7 @@
 
 ### 图层组件
 1. 图层语法
-   1. 基础：layer (goom, goom_params, stat, otat_params, data, mapping, position)
+   1. 基础：layer (geom, geom_params, stat, otat_params, data, mapping, position)
    2. 快捷语法：
       1. geom_xxx(mapping = aes(x, y), stat = "stat_xxx", position = "position_xxx")
       2. stat_xxx(mapping = aes(x, y), position = "position_xxx")
@@ -82,7 +82,83 @@
    1. 统计变换：`stat_xxx()`，见[统计变换类型](补充资料/ggplot/统计变换1.jpg)
 6. 位置调整
 
+### 工具箱
+1. 揭示不确定性：误差棒
+   1. 常见工具：[可用几何对象](补充资料/ggplot/不确定性.jpg)
+2. 统计摘要：
+   1. 单独的统计摘要计算函数：`fun.y,fun.ymin,fun.ymax`
+   2. 复杂的统计摘要计算函数：`fun.data`,[可用摘要函数](补充资料/ggplot/统计摘要.jpg)
+3. 图形注解：注解只是额外的数据
+   1. 逐个添加
+   2. 批量添加
+4. 权重数据
 
+### 标度、坐标轴和图例
+1. 标度：
+   1. 工作原理：
+      1. 变换：数据到图形的映射，先于统计摘要可以让数据在不同的数据变换条件下尺度保持一致
+      2. 训练：根据所有数据集里数据的范围得到整体数据的范围，用于控制多个图层中数据到图形的映射范围
+      3. 映射：数据属性映射到图形空间，如color、size、shape等
+   2. 标度类型：
+      1. 位置标度：用于将连续型、离散型和日期-时间型变量映射到绘图区域，以及构造对应的坐标轴；
+         1. 基本参数
+            1. xlim,ylim：坐标轴范围
+            2. expand：坐标轴范围扩大范围，例子：`expand = c(0.1,0.1)`，第一个参数给出乘的溢出，第二个参数给出加的溢出
+         2. 连续型：
+            1. scale_x_continuous()：用于连续型变量的位置标度，包括：
+               1. trans：变换函数，默认是identity，可以选择log10、sqrt、reverse等;等价于scale_x_log10()，但在坐标轴的标签上不一样
+            2. scale_y_continuous()：用于连续型变量的位置标度，包括：同上
+         3. 日期-时间型：
+            1. scale_x_date()：日期-时间型变量的位置标度，包括：
+               1. major和minor：以时间为单位设置主刻度和次刻度
+               2. format：日期格式，如"%Y-%m-%d"
+            2. scale_y_date()：日期-时间型变量的位置标度，包括：
+         4. 离散型：
+            1. xlim,ylim
+      2. 颜色标度：用于将连续型、离散型变量映射到颜色空间，以及构造对应的颜色映射；
+         1. 连续型（即渐变色）：
+            1. scale_color_gradient()和scale_fill_gradient()：双色梯度，low和high参数控制颜色梯度两端的值
+            2. scale_color_gradient2()和scale_fill_gradient2()：三色梯度，low和high参数控制颜色梯度两端的值，mid参数控制中间值
+            3. scale_color_gradientn()和scale_fill_gradientn()：多色梯度，low和high参数控制颜色梯度两端的值，n参数控制颜色数;rescale和value参数
+         2. 离散型：
+            1. 自动选择：scale_color_brewer()和scale_color_hue()，沿着色轮均匀分布的色相选择
+            2. 手动选择：scale_color_manual()，手动选择颜色，values参数控制颜色值
+      3. 手动标度：用于将离散型变量映射到我们选择的符号大小、线条类型、形状或颜色 ，以及创建对应的图例；
+      4. 同一型标度：用于直接将变拭值绘制为图形屈性，而不去映射它们。举例来说，假设我们想要将变讥映射为符号的颜色，而此变从本身就是一个由颜色值组成的向忧，那么我们就无须再将其映射为其他的颜色，直接渲染这些值本身即可.
+   3. 通用参数
+      1. name：标度名称,xlab,ylab,ggtitle,labs
+      2. limits：数据范围
+      3. breaks和labels：分割点和标签，有breaks时，labels可以不用设置；但有labels时，breaks必须要设置
+      4. formatter：未指定标签则自动格式化标签
+2. 图例和坐标轴：参考前面的name部分
+
+### 定位
+1. 位置调整：参考前文出现重叠对象部分（dodge、fill、stack、jitter、nudge）
+2. 位置标度：参考前文
+3. 分面：
+   1. 分面类型：
+      1. 网格型facet_grid()：两个分面变量，形成一个二维图形。同列面板必须有相同的x轴，同行面板必须有相同的y轴。space参数使标度成比例
+      2. 封装型facet_wrap()：一个分面变量，形成一行图形，根据一行图形的数量来将其换行，形成类似二维的效果
+   2. 标度控制
+      1. 固定：fixed
+      2. 自由变化：free，free_x，free_y
+   3. 连续型变量处理：
+      1. 转换成离散型变量：n个长度相同部分（可以控制分段的数量，或者分段的长度），n个数目点相同的部分
+   4. 其它
+      1. 分组与分面：分组的数据重叠在一起，可以用分面展示
+      2. 并列于分面：可以把并列和分面一起写，而且当两个变量完全交叉但部分组合水平缺失时，分面效果更好
+4. 坐标系
+   1. 可用坐标系：[坐标系](补充资料/ggplot/坐标系.jpg)
+   2. 坐标变换：第一步根据定位确定形状参数，第二步进行转换（分割再组合）
+   3. 坐标系种类：
+      1. 笛卡尔坐标系：
+         1. coord_cartesian()：默认的坐标系，x轴和y轴的范围是一致的，可以用xlim和ylim参数调整
+         2. coord_flip()：翻转坐标轴
+         3. corrd_trans()：坐标变换，包括log,sqrt,reverse等
+         4. coord_equal()：等比例坐标系，使坐标轴的长度相等
+      2. 非笛卡尔坐标系：
+         1. 极坐标系：coord_polar()，可以用折线的形式连接，也可以用柱状图或其他方式连接（需要在图层中加载函数）
+         2. 其他坐标系：coord_map()，可以用地图的形式展示数据，需要加载maptools包
 ## qplot函数(快速画图)
 1. 基础语法：qplot(x, y, data = data, geom = 'point', ...)
    1. 基本参数：坐标轴和数据集
