@@ -196,6 +196,17 @@
                 continue        #继续循环，不执行余下的代码
             print(number)
 
+## 推导式、迭代器和生成器
+1. 推导式
+   1. 支持的数据结构：列表、字典、集合、元组
+   2. 基本形式：`[out_exp_res for out_exp in input_list if condition]`
+2. 迭代器和生成器
+   1. 迭代器：
+      1. 支持的数据结构：字符创、列表、元组
+      2. 基本创建方法：iter()、next()
+   2. 生成器：就是一个迭代器，只能用于迭代操作
+      1. 基本创建方法：`yield`关键字，可以返回多个值，可以用for循环迭代，也可以用next()方法获取值
+
 ## 函数
 
 1. 定义函数：示例为`def greet_user():  print("hello!)`。def是关键字，greet_user()为函数名，括号内指出函数为完成其任务需要怎样的信息，以冒号结尾，后面所有的缩进构成函数体。
@@ -227,10 +238,20 @@
         name(1,2)
         name(1,2,3)
         def name(x,**y)       #**y创建了一个空字典
-    4. 将函数储存在模块中
+    4. 强制位置/关键字参数
+       1. 形参的/语法用来指定位置参数：`def f(a, b, /, c, d, *, e, f): print(a, b, c, d, e, f)`
+       2. 形参的*语法用来指定关键字参数
+    5. 将函数储存在模块中
        1. 模块创建和导入函数：创建一个包含函数name的文件“name.py”，然后在新的文件中输入`import name`，之后就能采用该函数`name.name()`（前面是文件名，后面是函数名）顺畅的调用该name函数了
        2. 导入特定/全部函数：`from name import name, name1`（特定）,`from name import *`（全部），这种情况**可以不加文件名调用**
        3. 给函数或模块制定别名（避免命名冲突或方便一些）：`from name import name as n`(函数指定)，`import name as na`（模块指定）
+ 2. lambda表达式
+    1. 简介：lambda表达式是一种创建匿名函数的简便方法，可以用lambda关键字来定义，语法为`lambda arg1, arg2, ... : expression`，其中arg1, arg2, ... 为函数的参数，expression为表达式，返回值就是表达式的结果。
+    2. 与内置函数的混合使用：
+       1. map()函数：`map(lambda x: x**2, [1,2,3,4,5])`，将列表中的每个元素都变成平方
+       2. filter()函数：`filter(lambda x: x%2 == 0, [1,2,3,4,5])`，将列表中的偶数保留
+       3. sorted()函数：`sorted([1,4,2,5,3], key=lambda x: x%2)`，将列表中的元素根据奇偶性排序
+       4. reduce()函数：`reduce(lambda x,y: x+y, [1,2,3,4,5])`，将列表中的元素相加
 
 ## 类
 
