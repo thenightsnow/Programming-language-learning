@@ -37,34 +37,94 @@
       3. 调整试次数量：`trial2Test = trials[:] *24`，可以采用切片重复次数的方式调整试次的数量；
       4. 调整试次顺序：`random.shuffle(trial2Test)`，使用随机函数随机呈现试次。
 
+## event模块
+1. 概述：
+> 是一个比较老的事件模块了，可以监听鼠标和键盘事件，并对鼠标和键盘进行一定的设置
+2. 鼠标
+   1. 创建鼠标对象：`event.Mouse()`
+   2. 鼠标事件：
+      1. `mouse.getPos()`，返回鼠标的当前位置；
+      2. `mouse.setPos((x, y))`，将鼠标移动到指定位置；
+      3. `mouse.click(button='left')`，点击鼠标；
+      4. `mouse.scroll(steps=1)`，滚动鼠标；
+      5. `mouse.isPressed(button='left')`，判断鼠标是否按下；
+      6. `mouse.getPressed()`，返回鼠标按下的键；
+      7. `mouse.getWheelRel()`，返回滚轮相对位置；
+      8. `mouse.getWheel()`，返回滚轮绝对位置；
+      9.  `mouse.setSystemCursor(cursor='arrow')`，设置鼠标图标；
+      10. `mouse.setVisible(visible=True)`，设置鼠标是否可见；
+3. 键盘
+   1. 键盘事件：
+      1. `event.getKeys()`，返回一个列表，包含所有按下的键；
+      2. `event.waitKeys()`，等待用户按下一个键，返回按下的键；
+      3. `event.clearEvents()`，清除所有事件；
+      4. `event.waitKeys(keyList=['z', 'x'])`，限制按键；
+      5. `event.getKeys(timeStamped=True)`，显示时间戳；
+      6. `event.getKeys(keyList=['z', 'x'], timeStamped=True)`，限制按键和显示时间戳；
+
+
 ## 眼动实验
 1. 核心模块：pylink
-2. 步骤
+2. 基本步骤
    1. 与主试机相连接：需要清楚主试机的IP，被试机需要和主试机有相同的网络IP，并确定其子网掩码
-      1. tk = pylink.EyeLink('100.1.1.1')
+      1. `tk = pylink.EyeLink('100.1.1.1')`
    2. 在主试机上打开EDF文件：可以给edf文件命名
-      1. tk.openDataFile('test.edf')
+      1. `tk.openDataFile('test.edf')`
    3. 设置眼动跟踪参数：例如采样频率为1000hz
-      1. 设置脱机模式：tk.setOfflineMode()，在修改tracker参数之前设置该模式
-      2. 采样频率：tk.sendCommand("sample_rate 1000")
-      3. 分辨率：tk.sendCommand(f"screen_pixel_coords = 0 0 {SCN_W-1} {SCN_H-1}")，可以用该参数来计算视角
-      4. 校准类型：tk.sendCommand("calibration_type = HV9")
-      5. 清除：tk.sendCommand('clear_screen 0')
-      6. 可选的文件头：tk.sendCommand("add_file_preamble_text 'Free Viewing Task'")
-      7. 在主试机的右下角发送信息：tk.sendCommand(f"record_status_message 'Picture:{pic}'")
+      1. 设置脱机模式：`tk.setOfflineMode()`，在修改tracker参数之前设置该模式
+      2. 采样频率：`tk.sendCommand("sample_rate 1000")`
+      3. 分辨率：`tk.sendCommand(f"screen_pixel_coords = 0 0 {SCN_W-1} {SCN_H-1}")`，可以用该参数来计算视角
+      4. 校准类型：`tk.sendCommand("calibration_type = HV9")`
+      5. 清除：`tk.sendCommand('clear_screen 0')`
+      6. 可选的文件头：`tk.sendCommand("add_file_preamble_text 'Free Viewing Task'")`
+      7. 在主试机的右下角发送信息：`tk.sendCommand(f"record_status_message 'Picture:{pic}'")`
    4. 打开全屏，用于相机设置和校准
-      1. 打开校准窗口：pylink.openGraphics()
-      2. 进行校准、验证训练：tk.doTrackerSetup()。在校准模式中，按C去校准，按V去验证，按O去跳出校准路径
+      1. 打开校准窗口：`pylink.openGraphics()`
+      2. 进行校准、验证训练：`tk.doTrackerSetup()`。在校准模式中，按C去校准，按V去验证，按O去跳出校准路径
       > 一个9点的校准在头部被固定时应用较好，而5点和13点的校准在头部不固定时较佳 
    5. 进行实验程序：一般每一个block校准一次
-      1. 进行试次标记：tk.sendMessage(f'Trial: {i}')
-      2. 漂移校正：tk.doDriftCorrect(int(SCN_W/2), int(SCN_H/2), 1, 1)，可以视为1点验证。前两个参数是像素坐标，第三个是是否需要画图像，第四个参数是按下'ESCAPE'是否触发校准程序
-      3. 开始记录：tk.startRecording(1, 1, 1, 1)，四个参数说明记录什么类型的数据
-      4. 缓存数据：pylink.msecDelay(2000)
-      5. 停止记录：tk.stopRecording()
+      1. 进行试次标记：`tk.sendMessage(f'Trial: {i}')`
+      2. 漂移校正：`tk.doDriftCorrect(int(SCN_W/2), int(SCN_H/2), 1, 1)`，可以视为1点验证。前两个参数是像素坐标，第三个是是否需要画图像，第四个参数是按下'ESCAPE'是否触发校准程序
+      3. 开始记录：`tk.startRecording(1, 1, 1, 1)`，第一个参数表示是否将样本写入edf文件，第二个参数表示是否将事件写入文件，第三个参数表示发送样本给link，第四个参数表示发送事件给link
+      4. 设置兴趣区：椭圆`tk.sendMessage('!V IAREA ELLIPSE 1 0 0 100 100 head')` 矩形`tk.sendMessage('!V IAREA RECTANGLE 2 85 85 285 185 body')` 自由`tk.sendMessage('!V IAREA FREEHAND 3 285,125 385,50 335,125 tail')`
+      > 需要注意的是，eyelink的坐标中心在左上方，而psychopy的坐标中心在屏幕中央
+      5. 缓存数据：`pylink.msecDelay(2000)`
+      6. 停止记录：`tk.stopRecording()`
    6. 关闭edf文件并将文件复制到Display PC
-      1. 关闭文件：tk.closeDataFile()
-      2. 复制文件：tk.receiveDataFile('test.edf', 'test.edf')
+      1. 关闭文件：`tk.closeDataFile()`
+      2. 复制文件：`tk.receiveDataFile('test.edf', 'test.edf')`
    7. 结束程序和硬件的连接
-      1. tk.close()
-      2. pylink.closeGraphics()
+      1. `tk.close()`
+      2. `pylink.closeGraphics()`
+3. 高级设置：
+   1. 实时获取眼动样本（接近实时）
+      1. 包含的信息：注视点位置、瞳孔大小、头的位置、摄像头传感器的原始位置
+      2. 相关指令：
+         1. `smp = tk.getNewestSample()`：获取最新样本
+         2. `is_left = smp.isLeftSample()`或`is_left = smp.isRightSample()`或`is_bino = smp.isBinocular()`：判断是否为左眼或右眼或双眼
+         3. `res = smp.getPPD()`：视角的1度等于多少像素位移
+         4. `time_stamp = smp.getTime()`：获取样本的时间戳
+         5. `gaze = smp.getRightEye().getGaze()`：获取右眼的注视点位置
+         6. `pupil = smp.getRightEye().getPupilSize()`：获取右眼的瞳孔大小
+         7. `href = smp.getRightEye().getHREF()`：获取头部的位置
+         8. `raw = smp.getRightEye().getRawPupil()`：获取摄像头传感器的原始位置
+   2. 实时获取眼动事件（会延迟一些）
+      1. 包含的信息：注视开始、注视结束、眼跳开始、眼跳结束、眨眼开始、眨眼结束
+      2. 相关指令：
+         1. 检查是否存在事件：`dt = tk.getNextData()`，dt一般为`[pylink.STARTSACC, pylink.ENDSACC, pylink.STARTFIX, pylink.ENDFIX]`中的一种
+         2. 将事件数据从队列中提取出来：`ev = tk.getFloatData()`
+            1. 眼跳事件：`ev.getAmplitude()`获取眼跳幅度等，见课本P165页《Eye-Tracking with Python and Pylink》
+            2. 注视事件：`ev.getEndGaze()`获取注视点信息，见课本P165页
+
+
+## 脑电实验
+1. 核心模块：`parallel`
+2. 基本步骤:
+   1. 创建一个`parallel.ParallelPort`对象，并连接到电脑的并行口，例如`port = parallel.ParallelPort(address='0x0378')`
+   2. 并口信号清零：`port.setData(0)`
+   3. 发送trigger信号：`port.setData(1)`
+3. 注意：
+   1. 并口对象的地址需要去目标电脑的硬件管理中查找
+   2. 在发出trigger信号前，需要先清除并口的信号，否则会导致信号冲突
+   3. 在发出triiger信号后，需要等待一段时间才能再次发送信号，否则会导致信号丢失
+   4. trigger信号可以在实验的特殊位置打上，也可以在特定的时间点发送，还可以根据实验条件进行设定
