@@ -31,25 +31,31 @@
         bike = ['a','b','c','d']
         bike[0] = 'x'    #将第一个元素换成x
         bike.append('e')     #在最后面扩展一个e
+        bike.extend(['f','g'])     #在末尾扩展一个列表
         bike.insert(0,'f')       #在开头位置插入一个f，其他元素像右平移一个位置，适用于任何位置
         del bike[0]         #删除第一个元素，适用于任何位置
         popped_bike = bike.pop()     #将末尾的元素删除，并将末尾的元素赋值给poped_bike
         first_owned = bike.pop(0)    #将开头的元素删除，并将末尾的元素赋值给poped_bike，适用于任何位置
-        bike.remove('c')     #当只清楚要删除的内容时，可以用这个
+        bike.remove('c')     #当只清楚要删除的内容时，可以用这个,但只删除第一个
    2. 组织列表
-      1. 排序
-         ```python {.line-numbers}
-         bike = ['a','c','d','b']
-         bike.sort()     #永久按字母顺序排序
-         bike.sort(reversw=True)     #永久按反向字母顺序排序
-         print(sorted(bike))     #临时按字母顺序排序
-         bike.reverse()     #排列成原顺序相反的顺序
-      2. 长度
-         ```python {.line-numbers}
-         bike = ['a','c','d','b']
-         len(bike)      #长度为其元素数量
+       1. 排序
+            ```python {.line-numbers}
+            import bisect
+            bike.sort()     #永久按字母顺序排序
+            bike = ['a','c','d','b']
+            bisect.bisect(bike, 'd')    #返回d插入的位置
+            bisect.insort(bike, 'e')     #按顺序在适当位置插入e
+            bike.sort(reversw=True)     #永久按反向字母顺序排序
+            print(sorted(bike))     #临时按字母顺序排序,返回一个新的拍好顺序的列表
+            bike.reverse()     #排列成原顺序相反的顺序
+       2. 长度
+            ```python {.line-numbers}
+            bike = ['a','c','d','b']
+            len(bike)      #长度为其元素数量
 2. 操作列表
-    1. 遍历列表：`bikes = ['a','c','d','b']  for bike in bikes:`
+    1. 遍历列表：
+       1. 直接循环：`bikes = ['a','c','d','b']  for bike in bikes:`
+       2. 枚举：`for i, value in enumerate(bikes):`
     2. 创造数字列表：
         ```python {.line-numbers}
         for value in range(1,5)
@@ -67,7 +73,10 @@
         print(bikes[-3:])        #输出最后三个元素
         for bike in bikes[1:3]      #遍历切片
         my_bikes = bikes[:]     #将原bikes创建了一个副本赋予my_bikes，两个变量所指的列表不同
+        bikes[::2]  #按照步长为2的方式切片，输出所有偶数位置的数据
+        bikes[::-1] #按照步长为-1的方式切片，输出所有元素，但顺序颠倒
         friend_bikes = bikes        #将原bikes赋值给了friend_bikes，两个变量所指的列表相同，改一个两个都变化
+    4. 拼接列表：`zip(list1,list2)`，将两个列表合并为一个成对（也可以多个）元组列表，然后再将每个元组转换为字典，最后合并为一个字典列表。
     4. 定义元组(**元组不可修改**)
         ```python {.line-numbers}
         dimensions = (1,2,3)        #元组是用圆括号标识的
@@ -78,8 +87,17 @@
 ## 字典
 
 1. 简单字典：`x = {'color': 'green', 'point': 5}  #字典就是一系列键值对，值可以是数字、字符串、列表乃至字典`
-2. 访问与修改字典：`x['color']    #访问`；`x['x_position'] = 0  #添加`；`x['color'] = yellow  #修改`；`del x['color']   #删除`
-3. 遍历字典
+2. 访问与修改字典：
+   1. 访问元素：`x['color']`；
+   2. 添加元素：`x['x_position'] = 0`；
+   3. 添加和更新字典：`x.update({'color': 'yellow'}) #如果key已经有了就是更新`；
+   4. 修改元素：`x['color'] = yellow`；
+   5. 删除元素：`del x['color']`
+3. 创建字典：
+   1. 从列表创建：
+      1. 方法1：`x = dict(zip(['a', 'b', 'c'], [1, 2, 3]))`
+      2. 方法2：`for key, value in zip(key_list, value_list):`
+4. 遍历字典
    ```python {.line-numbers}
    x = {'color': 'green', 'point': 5}
    for key, value in x.item():      #遍历所有键值
@@ -88,7 +106,7 @@
    for key in x:        #遍历所有键，默认状态
    for key in sorted(x.keys()):     #按字母顺序遍历所有键
    for value in x.values():     #遍历所有值
-4. 字典与列表
+5. 字典与列表
    1. 字典列表：`x1 = {'color': 'green', 'point': 5} x2 = {'color': 'green', 'point': 5} x3 = [x1, x2]`
    2. 在字典中储存列表：`x = {'color': ['red', 'green'], 'point': 5} `
    3. 在字典中储存字典：`x = {'color': {'red': 4, 'green': 5}, 'point': 5} `
