@@ -374,4 +374,3 @@
                 self.my_survey.store_response(response)
             for response in self.responses:
                 self.assertIn(response, self.my_survey.responses)
-
